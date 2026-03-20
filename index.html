@@ -297,6 +297,7 @@
     };
 
     let alertGroupIndex = 0;
+    let isSimulation = true;
 
     // ==================== PERSISTENCE ====================
     function loadState() {
@@ -329,18 +330,20 @@
     }
 
     function matchAlerts() {
-        const alertSet = new Set(state.activeAlerts.map(normalize));
         state.contacts.forEach(c => {
-            c.underThreat = alertSet.has(normalize(c.city));
+            const city = normalize(c.city);
+            c.underThreat = state.activeAlerts.some(alert => {
+                const a = normalize(alert);
+                return a === city || a.startsWith(city) || city.startsWith(a);
+            });
         });
     }
 
     async function cycleAlerts() {
-        // Try the real Pikud HaOref API
+        // Try the real Pikud HaOref API via server proxy
         try {
-            const res = await fetch('https://www.oref.org.il/WarningMessages/alert/alerts.json', {
-                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': 'https://www.oref.org.il/' },
-                signal: AbortSignal.timeout(3000)
+            const res = await fetch('/.netlify/functions/alerts', {
+                signal: AbortSignal.timeout(5000)
             });
             if (res.ok) {
                 const text = await res.text();
@@ -348,6 +351,7 @@
                     const data = JSON.parse(text);
                     if (data && data.data && data.data.length > 0) {
                         state.activeAlerts = data.data;
+                        isSimulation = false;
                         matchAlerts();
                         render();
                         return;
@@ -355,10 +359,11 @@
                 }
             }
         } catch (e) {
-            // CORS or network error — fall through to simulation
+            // Network error — fall through to simulation
         }
 
-        // Simulation fallback
+        // Simulation fallback (no real alerts right now)
+        isSimulation = true;
         state.activeAlerts = ALERT_GROUPS[alertGroupIndex];
         alertGroupIndex = (alertGroupIndex + 1) % ALERT_GROUPS.length;
         matchAlerts();
@@ -397,7 +402,7 @@
                     <i data-lucide="shield-check" class="w-5 h-5 text-green-600 flex-shrink-0"></i>
                     <div>
                         <p class="text-sm font-semibold text-green-700">אין התרעות פעילות</p>
-                        <p class="text-xs text-green-500">כל האזורים שקטים כרגע (סימולציה)</p>
+                        <p class="text-xs text-green-500">${isSimulation ? 'כל האזורים שקטים כרגע (סימולציה)' : 'כל האזורים שקטים כרגע — מחובר לפיקוד העורף'}</p>
                     </div>
                 </div>`;
         } else {
@@ -406,7 +411,7 @@
                 <div class="bg-red-50 border border-red-200 rounded-2xl p-4">
                     <div class="flex items-center gap-3 mb-2">
                         <i data-lucide="siren" class="w-5 h-5 text-red-500 pulse-icon flex-shrink-0"></i>
-                        <p class="text-sm font-semibold text-red-700">התרעות פעילות (סימולציה)</p>
+                        <p class="text-sm font-semibold text-red-700">${isSimulation ? 'התרעות פעילות (סימולציה)' : 'התרעות פעילות — פיקוד העורף'}</p>
                     </div>
                     <p class="text-sm text-red-600 mb-1">${state.activeAlerts.join(', ')}</p>
                     ${threatened > 0
