@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeCircle | סביבה בטוחה</title>
+    <meta name="description" content="מעקב בזמן אמת אחרי היקרים לכם בזמן התרעות">
+    <meta name="theme-color" content="#fafaf9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='%2378716c' stroke-width='8'/%3E%3Ccircle cx='50' cy='50' r='15' fill='%2378716c'/%3E%3C/svg%3E">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Assistant', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+
+        @keyframes pulse-border {
+            0%, 100% { border-color: rgb(248 113 113); }
+            50% { border-color: rgb(254 202 202); }
+        }
+        .pulse-border { animation: pulse-border 1.5s ease-in-out infinite; }
+
+        @keyframes pulse-icon {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        .pulse-icon { animation: pulse-icon 1.5s ease-in-out infinite; }
+
+        .contact-card { transition: all 0.3s ease; }
+
+        .sort-active {
+            background-color: rgb(245 245 244) !important;
+            border-color: rgb(120 113 108) !important;
+            font-weight: 600;
+        }
+
+        .filter-active {
+            background-color: rgb(254 242 242) !important;
+            border-color: rgb(252 165 165) !important;
+            color: rgb(185 28 28) !important;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-stone-50 font-sans text-stone-800 antialiased min-h-screen">
+
+    <noscript>
+        <div style="text-align:center;padding:80px 20px;font-family:sans-serif;">
+            <h2>SafeCircle</h2>
+            <p>יש להפעיל JavaScript כדי להשתמש באפליקציה</p>
+        </div>
+    </noscript>
+
+    <!-- ====== HEADER ====== -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-200">
+        <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="shield" class="w-6 h-6 text-stone-600"></i>
+                <span class="text-lg font-bold text-stone-800 tracking-tight">SafeCircle</span>
+            </div>
+            <a href="#dashboard" class="text-sm text-stone-500 hover:text-stone-700 transition">למעקב</a>
+        </div>
+    </header>
+
+    <!-- ====== HERO ====== -->
+    <section class="py-12 sm:py-20 bg-white border-b border-stone-100">
+        <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center gap-10 sm:gap-14">
+            <!-- Text -->
+            <div class="flex-1 text-center sm:text-right">
+                <h1 class="text-4xl sm:text-5xl font-bold text-stone-900 mb-4 leading-tight">סביבה בטוחה</h1>
+                <p class="text-lg text-stone-500 mb-6 leading-relaxed">
+                    מעקב בזמן אמת אחרי היקרים לכם בזמן התרעות.<br>
+                    דעו מי בסכנה, צרו קשר בלחיצה.
+                </p>
+                <a href="#dashboard" class="inline-flex items-center gap-2 bg-stone-800 text-white px-6 py-3 rounded-2xl text-sm font-semibold hover:bg-stone-700 transition">
+                    התחילו עכשיו
+                    <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            <!-- Phone Mockup -->
+            <div class="flex-shrink-0">
+                <div class="relative w-52 sm:w-60 mx-auto">
+                    <div class="bg-white rounded-[2.5rem] border-[3px] border-stone-300 p-3 shadow-lg">
+                        <!-- Notch -->
+                        <div class="w-20 h-5 bg-stone-200 rounded-full mx-auto mb-3"></div>
+                        <!-- Screen -->
+                        <div class="space-y-2 px-1">
+                            <!-- Mini alert banner -->
+                            <div class="bg-red-50 border border-red-200 rounded-xl px-2 py-1.5">
+                                <p class="text-[9px] text-red-600 text-center font-semibold">התרעות: אשקלון, שדרות</p>
+                            </div>
+                            <!-- Card 1 - threatened -->
+                            <div class="bg-red-50 border border-red-400 rounded-xl p-2.5 pulse-border">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="siren" class="w-3.5 h-3.5 text-red-500 pulse-icon"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-bold">אמא</p>
+                                        <p class="text-[9px] text-stone-500">אשקלון</p>
+                                    </div>
+                                    <span class="text-[8px] px-1.5 py-0.5 rounded-md bg-red-100 text-red-700 mr-auto flex-shrink-0">משפחה</span>
+                                </div>
+                            </div>
+                            <!-- Card 2 - safe -->
+                            <div class="bg-white border border-stone-200 rounded-xl p-2.5">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-green-500"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-bold">דני</p>
+                                        <p class="text-[9px] text-stone-500">תל אביב</p>
+                                    </div>
+                                    <span class="text-[8px] px-1.5 py-0.5 rounded-md bg-stone-100 text-stone-500 mr-auto flex-shrink-0">חבר/ה</span>
+                                </div>
+                            </div>
+                            <!-- Card 3 - safe -->
+                            <div class="bg-white border border-stone-200 rounded-xl p-2.5">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-green-500"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-bold">מיכל</p>
+                                        <p class="text-[9px] text-stone-500">ירושלים</p>
+                                    </div>
+                                    <span class="text-[8px] px-1.5 py-0.5 rounded-md bg-stone-100 text-stone-500 mr-auto flex-shrink-0">משפחה</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Home indicator -->
+                        <div class="w-16 h-1 bg-stone-200 rounded-full mx-auto mt-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== DASHBOARD ====== -->
+    <main id="dashboard" class="max-w-2xl mx-auto px-4 py-8">
+
+        <!-- Alert Banner -->
+        <div id="alertBanner" class="mb-6"></div>
+
+        <!-- Add Contact -->
+        <div class="mb-6">
+            <button id="toggleFormBtn" onclick="toggleForm()" class="w-full flex items-center justify-center gap-2 py-3.5 border-2 border-dashed border-stone-300 rounded-2xl text-stone-500 hover:border-stone-400 hover:text-stone-600 transition active:scale-[0.98]">
+                <i data-lucide="user-plus" class="w-5 h-5"></i>
+                <span>הוסיפו איש קשר</span>
+            </button>
+            <form id="addForm" class="hidden mt-4 bg-white rounded-2xl border border-stone-200 p-5 space-y-3 shadow-sm" onsubmit="handleAddContact(event)">
+                <div class="grid grid-cols-2 gap-3">
+                    <input name="contactName" required placeholder="שם" class="col-span-2 sm:col-span-1 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 text-sm focus:outline-none focus:border-stone-400 focus:bg-white transition" autocomplete="off">
+                    <select name="relationship" class="col-span-2 sm:col-span-1 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 text-sm focus:outline-none focus:border-stone-400 transition">
+                        <option value="משפחה">משפחה</option>
+                        <option value="חבר/ה">חבר/ה</option>
+                        <option value="עמית/ה">עמית/ה</option>
+                    </select>
+                    <input name="city" required placeholder="עיר" class="px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 text-sm focus:outline-none focus:border-stone-400 focus:bg-white transition" autocomplete="off">
+                    <input name="street" placeholder="רחוב (אופציונלי)" class="px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 text-sm focus:outline-none focus:border-stone-400 focus:bg-white transition" autocomplete="off">
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 py-3 bg-stone-800 text-white rounded-xl text-sm font-semibold hover:bg-stone-700 transition active:scale-[0.98]">
+                        הוסף
+                    </button>
+                    <button type="button" onclick="toggleForm()" class="px-4 py-3 rounded-xl border border-stone-200 text-sm text-stone-500 hover:bg-stone-50 transition">
+                        ביטול
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Toolbar -->
+        <div id="toolbar" class="mb-4 flex flex-wrap items-center gap-2">
+            <span class="text-xs text-stone-400">מיון:</span>
+            <button onclick="handleSort('name')" class="sort-btn px-3 py-1.5 text-xs rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95" data-sort="name">שם</button>
+            <button onclick="handleSort('relationship')" class="sort-btn px-3 py-1.5 text-xs rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95" data-sort="relationship">קשר</button>
+            <button onclick="handleSort('threat')" class="sort-btn px-3 py-1.5 text-xs rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95" data-sort="threat">מאוימים ראשון</button>
+            <div class="flex-1"></div>
+            <button id="filterBtn" onclick="handleFilterToggle()" class="px-3 py-1.5 text-xs rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95">
+                רק מאוימים
+            </button>
+        </div>
+
+        <!-- Contact Cards -->
+        <div id="cardsContainer" class="space-y-3"></div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-16">
+            <i data-lucide="users" class="w-12 h-12 text-stone-300 mx-auto mb-4"></i>
+            <p class="text-stone-400 mb-1">אין אנשי קשר עדיין</p>
+            <p class="text-sm text-stone-300 mb-4">הוסיפו אנשי קשר כדי לעקוב אחריהם</p>
+            <button onclick="resetToDefaults()" class="text-sm text-stone-400 hover:text-stone-600 underline transition">
+                טען אנשי קשר לדוגמה
+            </button>
+        </div>
+    </main>
+
+    <!-- ====== HOW IT WORKS ====== -->
+    <section class="py-16 bg-white border-t border-stone-100">
+        <div class="max-w-2xl mx-auto px-4">
+            <h2 class="text-2xl font-bold text-center mb-10">איך זה עובד?</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-14 h-14 bg-stone-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="user-plus" class="w-7 h-7 text-stone-600"></i>
+                    </div>
+                    <h3 class="font-semibold mb-1">הוסיפו אנשי קשר</h3>
+                    <p class="text-sm text-stone-500">הזינו את האנשים החשובים לכם עם כתובתם</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-14 h-14 bg-stone-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="radio" class="w-7 h-7 text-stone-600"></i>
+                    </div>
+                    <h3 class="font-semibold mb-1">סנכרון התרעות</h3>
+                    <p class="text-sm text-stone-500">המערכת מסנכרנת בזמן אמת עם התרעות פיקוד העורף</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-14 h-14 bg-stone-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="bell-ring" class="w-7 h-7 text-stone-600"></i>
+                    </div>
+                    <h3 class="font-semibold mb-1">הישארו מעודכנים</h3>
+                    <p class="text-sm text-stone-500">קבלו עדכון מיידי ושלחו הודעה בלחיצה אחת</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== FOOTER ====== -->
+    <footer class="py-6 border-t border-stone-200 bg-white">
+        <div class="max-w-2xl mx-auto px-4 text-center">
+            <p class="text-sm text-stone-400">
+                16.3.26 &copy; דרור נטע &copy; |
+                <a href="https://hadigitalit.com" target="_blank" rel="noopener" class="hover:text-stone-600 transition">hadigitalit.com</a> |
+                Neta Dror
+            </p>
+        </div>
+    </footer>
+
+    <!-- ====== APPLICATION LOGIC ====== -->
+    <script>
+    // ==================== CONFIGURATION ====================
+    const ALERT_CYCLE_MS = 20000;
+
+    const ALERT_GROUPS = [
+        ['אשקלון', 'שדרות', 'נתיבות'],
+        ['באר שבע', 'אופקים', 'ערד'],
+        [],
+        ['אשדוד', 'גן יבנה', 'קרית מלאכי'],
+        ['תל אביב', 'רמת גן', 'גבעתיים'],
+        [],
+        ['חיפה', 'עכו', 'נהריה'],
+        ['קריית שמונה', 'מטולה', 'צפת'],
+        [],
+    ];
+
+    const DEFAULT_CONTACTS = [
+        { id: '1', name: 'אמא', relationship: 'משפחה', city: 'אשקלון', street: 'הרצל 15' },
+        { id: '2', name: 'דני', relationship: 'חבר/ה', city: 'תל אביב', street: 'דיזנגוף 99' },
+        { id: '3', name: 'מיכל', relationship: 'משפחה', city: 'שדרות', street: 'הנרקיס 7' },
+        { id: '4', name: 'יוסי', relationship: 'עמית/ה', city: 'ירושלים', street: 'יפו 20' },
+        { id: '5', name: 'רונית', relationship: 'משפחה', city: 'חיפה', street: 'הנביאים 3' },
+    ];
+
+    // ==================== STATE ====================
+    let state = {
+        contacts: [],
+        activeAlerts: [],
+        sortBy: 'threat',
+        filterThreatOnly: false,
+        formOpen: false
+    };
+
+    let alertGroupIndex = 0;
+
+    // ==================== PERSISTENCE ====================
+    function loadState() {
+        try {
+            const saved = localStorage.getItem('safecircle');
+            if (saved) {
+                const data = JSON.parse(saved);
+                state.contacts = data.contacts || [];
+                state.sortBy = data.sortBy || 'threat';
+                state.filterThreatOnly = data.filterThreatOnly || false;
+            } else {
+                state.contacts = DEFAULT_CONTACTS.map(c => ({ ...c, underThreat: false }));
+            }
+        } catch {
+            state.contacts = DEFAULT_CONTACTS.map(c => ({ ...c, underThreat: false }));
+        }
+    }
+
+    function saveState() {
+        localStorage.setItem('safecircle', JSON.stringify({
+            contacts: state.contacts,
+            sortBy: state.sortBy,
+            filterThreatOnly: state.filterThreatOnly
+        }));
+    }
+
+    // ==================== ALERT ENGINE ====================
+    function normalize(str) {
+        return str.trim().replace(/[\u0591-\u05C7]/g, '');
+    }
+
+    function matchAlerts() {
+        const alertSet = new Set(state.activeAlerts.map(normalize));
+        state.contacts.forEach(c => {
+            c.underThreat = alertSet.has(normalize(c.city));
+        });
+    }
+
+    async function cycleAlerts() {
+        // Try the real Pikud HaOref API
+        try {
+            const res = await fetch('https://www.oref.org.il/WarningMessages/alert/alerts.json', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': 'https://www.oref.org.il/' },
+                signal: AbortSignal.timeout(3000)
+            });
+            if (res.ok) {
+                const text = await res.text();
+                if (text && text.trim().length > 2) {
+                    const data = JSON.parse(text);
+                    if (data && data.data && data.data.length > 0) {
+                        state.activeAlerts = data.data;
+                        matchAlerts();
+                        render();
+                        return;
+                    }
+                }
+            }
+        } catch (e) {
+            // CORS or network error — fall through to simulation
+        }
+
+        // Simulation fallback
+        state.activeAlerts = ALERT_GROUPS[alertGroupIndex];
+        alertGroupIndex = (alertGroupIndex + 1) % ALERT_GROUPS.length;
+        matchAlerts();
+        render();
+    }
+
+    // ==================== SORTING & FILTERING ====================
+    function getFilteredContacts() {
+        let contacts = [...state.contacts];
+        if (state.filterThreatOnly) {
+            contacts = contacts.filter(c => c.underThreat);
+        }
+        switch (state.sortBy) {
+            case 'name':
+                contacts.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+                break;
+            case 'relationship':
+                contacts.sort((a, b) => a.relationship.localeCompare(b.relationship, 'he'));
+                break;
+            case 'threat':
+                contacts.sort((a, b) =>
+                    (b.underThreat ? 1 : 0) - (a.underThreat ? 1 : 0) ||
+                    a.name.localeCompare(b.name, 'he')
+                );
+                break;
+        }
+        return contacts;
+    }
+
+    // ==================== RENDERING ====================
+    function renderAlertBanner() {
+        const el = document.getElementById('alertBanner');
+        if (state.activeAlerts.length === 0) {
+            el.innerHTML = `
+                <div class="bg-green-50 border border-green-200 rounded-2xl p-4 flex items-center gap-3">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-green-600 flex-shrink-0"></i>
+                    <div>
+                        <p class="text-sm font-semibold text-green-700">אין התרעות פעילות</p>
+                        <p class="text-xs text-green-500">כל האזורים שקטים כרגע (סימולציה)</p>
+                    </div>
+                </div>`;
+        } else {
+            const threatened = state.contacts.filter(c => c.underThreat).length;
+            el.innerHTML = `
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i data-lucide="siren" class="w-5 h-5 text-red-500 pulse-icon flex-shrink-0"></i>
+                        <p class="text-sm font-semibold text-red-700">התרעות פעילות (סימולציה)</p>
+                    </div>
+                    <p class="text-sm text-red-600 mb-1">${state.activeAlerts.join(', ')}</p>
+                    ${threatened > 0
+                        ? `<p class="text-xs text-red-500 mt-1">${threatened} מאנשי הקשר שלכם באזור מאוים</p>`
+                        : '<p class="text-xs text-stone-400 mt-1">אף אחד מאנשי הקשר שלכם לא באזור זה</p>'
+                    }
+                </div>`;
+        }
+    }
+
+    function renderCard(contact) {
+        const t = contact.underThreat;
+        const whatsappMsg = encodeURIComponent(`היי ${contact.name}, ראיתי שיש אצלכם התרעה, הכל בסדר?`);
+        const whatsappUrl = `https://wa.me/?text=${whatsappMsg}`;
+
+        return `
+        <div class="contact-card border rounded-2xl p-4 ${t ? 'bg-red-50 border-red-400 pulse-border' : 'bg-white border-stone-200'}">
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 ${t ? 'bg-red-100' : 'bg-green-50'} rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <i data-lucide="${t ? 'siren' : 'check-circle'}" class="w-5 h-5 ${t ? 'text-red-500 pulse-icon' : 'text-green-500'}"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2 mb-0.5">
+                        <h3 class="font-bold text-stone-900 truncate">${contact.name}</h3>
+                        <span class="text-xs px-2 py-0.5 rounded-lg flex-shrink-0 ${t ? 'bg-red-100 text-red-700' : 'bg-stone-100 text-stone-500'}">${contact.relationship}</span>
+                    </div>
+                    <p class="text-sm text-stone-500">${contact.city}${contact.street ? ', ' + contact.street : ''}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 mt-3 pt-3 border-t ${t ? 'border-red-200' : 'border-stone-100'}">
+                <a href="${whatsappUrl}" target="_blank" rel="noopener"
+                   class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition active:scale-[0.97] ${t ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                    WhatsApp
+                </a>
+                <button onclick="handleDeleteContact('${contact.id}')"
+                        class="w-10 h-10 flex items-center justify-center rounded-xl transition active:scale-90 ${t ? 'text-red-300 hover:text-red-500 hover:bg-red-100' : 'text-stone-300 hover:text-stone-500 hover:bg-stone-100'}">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>`;
+    }
+
+    function renderCards() {
+        const container = document.getElementById('cardsContainer');
+        const emptyEl = document.getElementById('emptyState');
+        const filtered = getFilteredContacts();
+
+        if (state.contacts.length === 0) {
+            container.innerHTML = '';
+            emptyEl.classList.remove('hidden');
+            return;
+        }
+
+        emptyEl.classList.add('hidden');
+
+        if (filtered.length === 0 && state.filterThreatOnly) {
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <i data-lucide="shield-check" class="w-10 h-10 text-green-300 mx-auto mb-3"></i>
+                    <p class="text-stone-400">אף אחד מאנשי הקשר שלכם לא באזור מאוים כרגע</p>
+                </div>`;
+        } else {
+            container.innerHTML = filtered.map(renderCard).join('');
+        }
+    }
+
+    function updateToolbar() {
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+            btn.classList.toggle('sort-active', btn.dataset.sort === state.sortBy);
+        });
+        document.getElementById('filterBtn').classList.toggle('filter-active', state.filterThreatOnly);
+    }
+
+    function render() {
+        renderAlertBanner();
+        renderCards();
+        updateToolbar();
+        lucide.createIcons();
+    }
+
+    // ==================== EVENT HANDLERS ====================
+    function toggleForm() {
+        state.formOpen = !state.formOpen;
+        const form = document.getElementById('addForm');
+        const btn = document.getElementById('toggleFormBtn');
+        form.classList.toggle('hidden', !state.formOpen);
+        btn.classList.toggle('hidden', state.formOpen);
+        if (state.formOpen) {
+            setTimeout(() => form.querySelector('input[name="contactName"]').focus(), 100);
+        }
+    }
+
+    function handleAddContact(e) {
+        e.preventDefault();
+        const form = e.target;
+        const contact = {
+            id: Date.now().toString(),
+            name: form.contactName.value.trim(),
+            relationship: form.relationship.value,
+            city: form.city.value.trim(),
+            street: form.street.value.trim(),
+            underThreat: false
+        };
+        state.contacts.push(contact);
+        matchAlerts();
+        saveState();
+        form.reset();
+        toggleForm();
+        render();
+        setTimeout(() => {
+            const last = document.getElementById('cardsContainer').lastElementChild;
+            if (last) last.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+
+    function handleDeleteContact(id) {
+        if (confirm('למחוק את איש הקשר?')) {
+            state.contacts = state.contacts.filter(c => c.id !== id);
+            saveState();
+            render();
+        }
+    }
+
+    function handleSort(sortBy) {
+        state.sortBy = sortBy;
+        saveState();
+        render();
+    }
+
+    function handleFilterToggle() {
+        state.filterThreatOnly = !state.filterThreatOnly;
+        saveState();
+        render();
+    }
+
+    function resetToDefaults() {
+        state.contacts = DEFAULT_CONTACTS.map(c => ({ ...c, underThreat: false }));
+        matchAlerts();
+        saveState();
+        render();
+    }
+
+    // ==================== INITIALIZATION ====================
+    function init() {
+        loadState();
+        cycleAlerts();
+        setInterval(cycleAlerts, ALERT_CYCLE_MS);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
